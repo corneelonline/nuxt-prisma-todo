@@ -9,3 +9,21 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model tasks {
+  id            Int      @id @default(autoincrement())
+  name          String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  due_at        DateTime @updatedAt
+  is_completed  Boolean  @default(false)
+  owner         users?    @relation(fields: [owner_id], references: [id])
+  owner_id      Int?
+}
+
+model users {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  task  tasks[]
+}
