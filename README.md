@@ -133,7 +133,7 @@ The first feature you’ll be implementing is creating a user/ author. The datab
 ```
 // index.js
 app.post(`/user`, async (req, res) => {
-  const result = await prisma.user.create({
+  const result = await prisma.users.create({
     data: {
       email: req.body.email,
       name: req.body.name,
@@ -151,7 +151,7 @@ Next, you’ll add the create task endpoint.
 // index.js
 app.post('/task', async (req, res) => {
   const { name, due_at, authorEmail } = req.body
-  const task = await prisma.task.create({
+  const task = await prisma.tasks.create({
     data: {
       title,
       content,
@@ -172,7 +172,7 @@ Once that is done, you’ll need to be able to view all uncompleted tasks. Prism
 
 ```
 app.get('/tasks', async (req, res) => {
-  const tasks = await prisma.task.findMany({
+  const tasks = await prisma.tasks.findMany({
     where: { is_completed: false },
     include: { owner: true }
   })
@@ -188,7 +188,7 @@ You can get a task by it’s `id` using `findUnique` as follows:
 // index.js
 app.get('/task/:id', async (req, res) => {
   const { id } = req.params
-  const task = await prisma.task.findUnique({
+  const task = await prisma.tasks.findUnique({
     where: {
       id: Number(id),
     },
@@ -204,7 +204,7 @@ app.get('/task/:id', async (req, res) => {
 // index.js
 app.put('/finish/:id', async (req, res) => {
   const { id } = req.params
-  const task = await prisma.task.update({
+  const task = await prisma.tasks.update({
     where: {
       id: Number(id),
     },
@@ -221,7 +221,7 @@ Get all the completed tasks.
 ```
 // index.js
 app.get('/completed', async (req, res) => {
-  const tasks = await prisma.task.findMany({
+  const tasks = await prisma.tasks.findMany({
     where: { is_completed: true },
     include: { owner: true },
   })
@@ -237,7 +237,7 @@ The last CRUD feature is deleting a `Task` record in your database:
 // index.js
 app.delete(`/task/:id`, async (req, res) => {
   const { id } = req.params
-  const task = await prisma.task.delete({
+  const task = await prisma.tasks.delete({
     where: {
       id: parseInt(id),
     },
@@ -254,7 +254,7 @@ The final feature in your application is filtering posts, checking if the `searc
 // index.js
 app.get('/filterTasks', async (req, res) => {
   const { searchString } = req.query
-  const draftTasks = await prisma.task.findMany({
+  const draftTasks = await prisma.tasks.findMany({
     where: {
       OR: [
         {
@@ -268,3 +268,20 @@ app.get('/filterTasks', async (req, res) => {
   res.send(draftTasks)
 })
 ```
+
+## Step 4: Take your API for a spin
+
+Once you’ve modified `nuxt.config.js`, make sure to restart your Nuxt app. You can use Prisma Studio to create your database records. Alternatively, you can use your favorite API testing tool - for example Postman,Insomnia or REST Client - to test your API by making HTTP requests against your API.
+
+In a new terminal window, use the Prisma CLI to startup Prisma Studio.
+
+```
+yarn prisma studio
+```
+
+The command opens Prisma studio on `localhost:5555`.
+
+- Create a couple of `User` and `Task` records on Prisma Studio and save your changes.
+- Since the post isn’t published yet, fetch a list of the drafted posts using the GET api/drafts endpoint.
+
+Check: http://localhost:3000/api/tasks

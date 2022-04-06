@@ -11,7 +11,7 @@ app.use(express.json())
 */
 
 app.post(`/user`, async (req, res) => {
-  const result = await prisma.user.create({
+  const result = await prisma.users.create({
     data: {
       email: req.body.email,
       name: req.body.name,
@@ -22,7 +22,7 @@ app.post(`/user`, async (req, res) => {
 
 app.post('/task', async (req, res) => {
   const { name, due_at, authorEmail } = req.body
-  const task = await prisma.task.create({
+  const task = await prisma.tasks.create({
     data: {
       name,
       due_at,
@@ -37,7 +37,7 @@ app.post('/task', async (req, res) => {
 })
 
 app.get('/tasks', async (req, res) => {
-  const tasks = await prisma.task.findMany({
+  const tasks = await prisma.tasks.findMany({
     where: { is_completed: false },
     include: { owner: true }
   })
@@ -46,7 +46,7 @@ app.get('/tasks', async (req, res) => {
 
 app.get('/task/:id', async (req, res) => {
   const { id } = req.params
-  const task = await prisma.task.findUnique({
+  const task = await prisma.tasks.findUnique({
     where: {
       id: Number(id),
     },
@@ -57,7 +57,7 @@ app.get('/task/:id', async (req, res) => {
 
 app.put('/finish/:id', async (req, res) => {
   const { id } = req.params
-  const task = await prisma.task.update({
+  const task = await prisma.tasks.update({
     where: {
       id: Number(id),
     },
@@ -67,7 +67,7 @@ app.put('/finish/:id', async (req, res) => {
 })
 
 app.get('/completed', async (req, res) => {
-  const tasks = await prisma.task.findMany({
+  const tasks = await prisma.tasks.findMany({
     where: { is_completed: true },
     include: { owner: true },
   })
@@ -76,7 +76,7 @@ app.get('/completed', async (req, res) => {
 
 app.delete(`/task/:id`, async (req, res) => {
   const { id } = req.params
-  const task = await prisma.task.delete({
+  const task = await prisma.tasks.delete({
     where: {
       id: parseInt(id),
     },
@@ -86,7 +86,7 @@ app.delete(`/task/:id`, async (req, res) => {
 
 app.get('/filterTasks', async (req, res) => {
   const { searchString } = req.query
-  const draftTasks = await prisma.task.findMany({
+  const draftTasks = await prisma.tasks.findMany({
     where: {
       OR: [
         {
