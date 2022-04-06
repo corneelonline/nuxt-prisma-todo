@@ -126,3 +126,145 @@ export default {
 
 The above code initializes Express and Prisma and exports two properties, `path` and `handler`, which will be registered in `nuxt.config.js` in *Step 4*. The `path` property specifies the route the middleware will be accessible, and `handler` specifies the function executed when invoked. For the rest of this step, you’ll be working in index.js setting up the endpoints and their respective handlers.
 
+### Create a User
+
+The first feature you’ll be implementing is creating a user/ author. The database will be expecting an `email` and an optional `name`. It’s implementation is as follows:
+
+```
+// index.js
+app.post(`/user`, async (req, res) => {
+  const result = await prisma.user.create({
+    data: {
+      email: req.body.email,
+      name: req.body.name,
+    },
+  })
+  res.json(result)
+})
+```
+
+### Creating a Task
+
+Next, you’ll add the create task endpoint.
+
+```
+// index.js
+app.post('/task', async (req, res) => {
+  const { name, due_at, authorEmail } = req.body
+  const task = await prisma.task.create({
+    data: {
+      title,
+      content,
+      owner: {
+        connectOrCreate: {
+          email: authorEmail
+        }
+      }
+    }
+  })
+  res.status(200).json(task)
+})
+```
+
+### Get uncompleted tasks
+
+Once that is done, you’ll need to be able to view all uncompleted tasks. Prisma lets you specify all relations you’d like to be returned in the response with the `include` property. This is where you’ll add the `owner` relation query to view the respective tasks as well as their `owners`.
+
+```
+app.get('/tasks', async (req, res) => {
+  const tasks = await prisma.task.findMany({
+    where: { is_completed: false },
+    include: { owner: true }
+  })
+  res.json(tasks)
+})
+```
+
+### Get Post by Id
+
+You can get a task by it’s `id` using `findUnique` as follows:
+
+```
+// index.js
+app.get('/task/:id', async (req, res) => {
+  const { id } = req.params
+  const task = await prisma.task.findUnique({
+    where: {
+      id: Number(id),
+    },
+    include: { owner: true }
+  })
+  res.json(task)
+})
+```
+
+### Set a task to completed
+
+```
+// index.js
+app.put('/finish/:id', async (req, res) => {
+  const { id } = req.params
+  const task = await prisma.task.update({
+    where: {
+      id: Number(id),
+    },
+    data: { is_completed: true },
+  })
+  res.json(task)
+})
+```
+
+### Get Feed
+
+Get all the completed tasks.
+
+```
+// index.js
+app.get('/completed', async (req, res) => {
+  const tasks = await prisma.task.findMany({
+    where: { is_completed: true },
+    include: { owner: true },
+  })
+  res.json(tasks)
+})
+```
+
+### Deleting a Post
+
+The last CRUD feature is deleting a `Task` record in your database:
+
+```
+// index.js
+app.delete(`/task/:id`, async (req, res) => {
+  const { id } = req.params
+  const task = await prisma.task.delete({
+    where: {
+      id: parseInt(id),
+    },
+  })
+  res.json(post)
+})
+```
+
+The final feature in your application is filtering posts, checking if the `searchString` is found in the `name` of your Tasks.
+
+### Search for a Task
+
+```
+// index.js
+app.get('/filterTasks', async (req, res) => {
+  const { searchString } = req.query
+  const draftTasks = await prisma.task.findMany({
+    where: {
+      OR: [
+        {
+          name: {
+            contains: searchString,
+          },
+        },
+      ],
+    },
+  })
+  res.send(draftTasks)
+})
+```
