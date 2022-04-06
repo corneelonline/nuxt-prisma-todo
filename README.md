@@ -86,3 +86,43 @@ yarn prisma migrate dev --name init
 
 The above command will create a migration called init located in the `/prisma/migrations` directory.
 
+## Step 3: Add your serverMiddleware endpoints
+
+Express is used to allow your API endpoints to access the request and response objects.
+
+Go ahead and install Express:
+
+```
+yarn add express
+```
+
+Create an `api` folder and an `index.js` file that will contain your API handlers:
+
+```
+mkdir api
+touch api/index.js
+```
+
+After creating your `/api/index.js` file, paste in the following code in `index.js`:
+
+```
+// index.js
+import express from 'express'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+const app = express()
+
+app.use(express.json())
+
+/** 
+* logic for our api will go here
+*/
+export default {
+  path: '/api',
+  handler: app
+}
+```
+
+The above code initializes Express and Prisma and exports two properties, `path` and `handler`, which will be registered in `nuxt.config.js` in *Step 4*. The `path` property specifies the route the middleware will be accessible, and `handler` specifies the function executed when invoked. For the rest of this step, you’ll be working in index.js setting up the endpoints and their respective handlers.
+
