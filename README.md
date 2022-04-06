@@ -1,5 +1,11 @@
 # nuxt-prisma-todo
 
+## Sources
+
+- [Adding an API and database to your Nuxt App with Prisma](https://dev.to/prisma/adding-an-api-and-database-to-your-nuxt-app-with-prisma-2nlp)
+- [Github repo](https://github.com/ruheni/prisma-nuxt)
+- [Prisma website](https://www.prisma.io/)
+
 ## Step 1: Install Nuxt
 
 ```bash
